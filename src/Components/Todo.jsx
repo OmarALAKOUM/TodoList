@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import todo_icon from "../assets/todo_icon.png";
 import TodoItems from "./TodoItems";
 import { FaSearch } from "react-icons/fa";
@@ -14,6 +14,7 @@ const Todo = () => {
   const [searchText, setSearchText] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [editId, setEditId] = useState(null);
+  const inputRef = useRef(null);
   const add = () => {
     const trimmedText = inputText.trim();
     if (trimmedText === "") {
@@ -70,10 +71,16 @@ const Todo = () => {
     );
     setFilteredTodos(filtered);
   }, [searchText, todoList]);
-
+  
   useEffect(() => {
     localStorage.setItem("todos", JSON.stringify(todoList));
   }, [todoList]);
+
+  useEffect(() => {
+    if (isEditing) {
+      inputRef.current?.focus(); 
+    }
+  }, [isEditing]);
 
   return (
     <div className="bg-white place-self-center w-11/12 max-w-md flex flex-col p7 min-h-[550px] rounded-lg">
@@ -95,6 +102,7 @@ const Todo = () => {
         <input
           className="bg-transparent border-0 outline-none flex-1 h-14 pl-6 pr-2 placeholder:text-slate-600"
           type="text"
+          ref={inputRef}
           placeholder="Enter your task"
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
